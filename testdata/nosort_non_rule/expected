@@ -1,0 +1,12 @@
+cc_library(
+    name = "apple",
+    srcs = ["apple.cc"],
+)
+
+# nosort
+EXPORTS = ["zebra.h"]
+
+cc_library(
+    name = "zebra",
+    srcs = ["zebra.cc"],
+)

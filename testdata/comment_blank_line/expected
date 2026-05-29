@@ -1,0 +1,11 @@
+# This comment has a blank line below it, separating it from apple.
+
+cc_library(
+    name = "apple",
+    srcs = ["apple.cc"],
+)
+
+cc_library(
+    name = "zebra",
+    srcs = ["zebra.cc"],
+)

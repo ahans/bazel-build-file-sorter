@@ -1,0 +1,14 @@
+load("//tools:defs.bzl", "cc_library", "cc_binary")
+
+COMMON_HDRS = ["common.h"]
+
+cc_binary(
+    name = "zebra",
+    srcs = ["zebra.cc"],
+)
+
+cc_library(
+    name = "apple",
+    srcs = ["apple.cc"],
+    hdrs = COMMON_HDRS,
+)

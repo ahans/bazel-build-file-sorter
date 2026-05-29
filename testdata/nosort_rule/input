@@ -1,0 +1,20 @@
+cc_library(
+    name = "zebra",
+    srcs = ["zebra.cc"],
+)
+
+cc_library(
+    name = "apple",
+    srcs = ["apple.cc"],
+)
+
+cc_library(
+    name = "mango",
+    srcs = ["mango.cc"],
+)
+
+# nosort
+cc_library(
+    name = "keep_me_last",
+    srcs = ["last.cc"],
+)

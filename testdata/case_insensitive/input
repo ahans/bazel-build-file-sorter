@@ -1,0 +1,14 @@
+cc_library(
+    name = "Zebra",
+    srcs = ["zebra.cc"],
+)
+
+cc_library(
+    name = "apple",
+    srcs = ["apple.cc"],
+)
+
+cc_library(
+    name = "Mango",
+    srcs = ["mango.cc"],
+)

@@ -1,0 +1,13 @@
+# This comment is before a variable that sits between two rules.
+COMMON_HDRS = ["common.h"]
+
+cc_library(
+    name = "apple",
+    srcs = ["apple.cc"],
+    hdrs = COMMON_HDRS,
+)
+
+cc_library(
+    name = "zebra",
+    srcs = ["zebra.cc"],
+)
