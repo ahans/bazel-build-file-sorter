@@ -1,5 +1,7 @@
 # build-file-sorter
 
+[![Test](https://github.com/ahans/bazel-build-file-sorter/actions/workflows/test.yml/badge.svg)](https://github.com/ahans/bazel-build-file-sorter/actions/workflows/test.yml)
+
 Sorts targets in Bazel BUILD files alphabetically by name, using the same parser as [buildozer](https://github.com/bazelbuild/buildtools/tree/main/buildozer).
 
 `load()` statements and variable assignments are left at the top in their original order. Only named rules (targets with a `name` attribute) are sorted.
@@ -23,7 +25,7 @@ Without `# nosort`, variable assignments and other non-rule statements move to t
 ## Install
 
 ```sh
-go install github.com/ahans/build-file-sorter@latest
+go install github.com/ahans/bazel-build-file-sorter@latest
 ```
 
 ## Usage
