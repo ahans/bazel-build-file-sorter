@@ -13,38 +13,35 @@ import (
 )
 
 func main() {
-	writeInPlace := flag.Bool("w", false, "write result back to file in place")
+	updateInPlace := flag.Bool("i", false, "update file in place")
 	flag.Parse()
 
 	if flag.NArg() != 1 {
-		fmt.Fprintf(os.Stderr, "usage: build-file-sorter [-w] <file>\n")
+		fmt.Fprintf(os.Stderr, "usage: build-file-sorter [-i] <file>\n")
+		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
 	filename := flag.Arg(0)
 
+	run(os.Stdout, filename, *updateInPlace)
+}
+
+func run(w io.Writer, filename string, updateInPlace bool) {
 	var data []byte
 	var err error
-	if filename == "-" {
-		data, err = io.ReadAll(os.Stdin)
-	} else {
-		data, err = os.ReadFile(filename)
-	}
+	data, err = os.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("read: %v", err)
+		log.Fatalf("reading input file failed: %v", err)
 	}
 
 	out, err := sortBuildFile(filename, data)
-	if err != nil {
-		log.Fatalf("parse: %v", err)
-	}
-
-	if *writeInPlace && filename != "-" {
+	if updateInPlace {
 		if err := os.WriteFile(filename, []byte(out), 0644); err != nil {
-			log.Fatalf("write: %v", err)
+			log.Fatalf("write failed: %v", err)
 		}
 	} else {
-		fmt.Print(out)
+		fmt.Fprint(w, out)
 	}
 }
 
