@@ -36,6 +36,9 @@ func run(w io.Writer, filename string, updateInPlace bool) {
 	}
 
 	out, err := sortBuildFile(filename, data)
+	if err != nil {
+		log.Fatalf("sortBuildFile failed: %v", err)
+	}
 	if updateInPlace {
 		if err := os.WriteFile(filename, []byte(out), 0644); err != nil {
 			log.Fatalf("write failed: %v", err)
