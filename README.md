@@ -1,6 +1,6 @@
 # build-file-sorter
 
-[![Test](https://github.com/ahans/bazel-build-file-sorter/actions/workflows/test.yml/badge.svg)](https://github.com/ahans/bazel-build-file-sorter/actions/workflows/test.yml)
+[![CI](https://github.com/ahans/bazel-build-file-sorter/actions/workflows/main.yml/badge.svg)](https://github.com/ahans/bazel-build-file-sorter/actions/workflows/main.yml)
 
 Sorts targets in Bazel BUILD files alphabetically by name, using the same parser as [buildozer](https://github.com/bazelbuild/buildtools/tree/main/buildozer).
 
