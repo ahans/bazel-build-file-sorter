@@ -16,3 +16,11 @@ vet:
 
 lint:
 	golangci-lint run ./...
+
+coverage:
+	go test -coverprofile coverage.dat ./...
+	go tool cover -html=coverage.dat
+
+clean:
+	rm build-file-sorter*
+	rm coverage.*

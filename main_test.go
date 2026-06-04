@@ -42,6 +42,21 @@ func TestSortBuildFile(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("invalid input", func(t *testing.T) {
+		inputPath := filepath.Join("testdata", "invalid")
+		input, err := os.ReadFile(inputPath)
+		if err != nil {
+			t.Fatalf("read input: %v", err)
+		}
+		got, err := sortBuildFile(inputPath, input)
+		if err == nil {
+			t.Error("err expected, but got nil")
+		}
+		if got != "" {
+			t.Errorf("expected empty output string, but got: %v", got)
+		}
+	})
 }
 
 func TestRun(t *testing.T) {
@@ -55,7 +70,10 @@ func TestRun(t *testing.T) {
 		t.Run(fmt.Sprintf("inPlace=%v", inPlace), func(t *testing.T) {
 			buildFilePath := copyToTemp(t, inputPath)
 			var buf bytes.Buffer
-			run(&buf, buildFilePath, inPlace)
+			err := run(&buf, buildFilePath, inPlace)
+			if err != nil {
+				t.Fatalf("run failed: %v", err)
+			}
 			got, err := os.ReadFile(buildFilePath)
 			if err != nil {
 				t.Fatalf("read build file: %v", err)
@@ -82,6 +100,17 @@ func TestRun(t *testing.T) {
 			}
 		})
 	}
+
+	t.Run("non-existent file", func(t *testing.T) {
+		var buf bytes.Buffer
+		err := run(&buf, "non-existent", false)
+		if err == nil {
+			t.Error("run returned nil instead of error")
+		}
+		if buf.Len() != 0 {
+			t.Errorf("expected buf to be empty, but got: %v", buf.String())
+		}
+	})
 }
 
 func copyToTemp(t *testing.T, src string) string {
