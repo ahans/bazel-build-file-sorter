@@ -1,0 +1,3 @@
+cc_binary(
+	name = "syntax_error",
+# closing parenthesis missing

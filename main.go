@@ -24,28 +24,36 @@ func main() {
 
 	filename := flag.Arg(0)
 
-	run(os.Stdout, filename, *updateInPlace)
+	err := run(os.Stdout, filename, *updateInPlace)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "failed: %v", err)
+	}
 }
 
-func run(w io.Writer, filename string, updateInPlace bool) {
+func run(w io.Writer, filename string, updateInPlace bool) error {
 	var data []byte
 	var err error
 	data, err = os.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("reading input file failed: %v", err)
+		log.Printf("reading input file failed: %v", err)
+		return err
 	}
 
 	out, err := sortBuildFile(filename, data)
 	if err != nil {
-		log.Fatalf("sortBuildFile failed: %v", err)
+		log.Printf("sortBuildFile failed: %v", err)
+		return err
 	}
 	if updateInPlace {
 		if err := os.WriteFile(filename, []byte(out), 0644); err != nil {
-			log.Fatalf("write failed: %v", err)
+			log.Printf("write failed: %v", err)
+			return err
 		}
 	} else {
-		fmt.Fprint(w, out)
+		_, err := fmt.Fprint(w, out)
+		return err
 	}
+	return nil
 }
 
 func sortBuildFile(filename string, data []byte) (string, error) {
