@@ -12,10 +12,18 @@ import (
 	"github.com/bazelbuild/buildtools/build"
 )
 
+var version = "dev"
+
 func main() {
 	updateInPlace := flag.Bool("i", false, "update file in place")
+	showVersion := flag.Bool("v", false, "print version and exit")
+
 	flag.Parse()
 
+	if *showVersion {
+		fmt.Println(version)
+		return
+	}
 	if flag.NArg() != 1 {
 		fmt.Fprintf(os.Stderr, "usage: build-file-sorter [-i] <file>\n")
 		flag.PrintDefaults()
@@ -44,7 +52,7 @@ func run(w io.Writer, filename string, updateInPlace bool) {
 			log.Fatalf("write failed: %v", err)
 		}
 	} else {
-		fmt.Fprint(w, out)
+		_, _ = fmt.Fprint(w, out)
 	}
 }
 
