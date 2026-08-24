@@ -1,4 +1,4 @@
-module github.com/ahans/build-file-sorter
+module github.com/ahans/bazel-build-file-sorter
 
 go 1.20
 

@@ -1,0 +1,7 @@
+- id: bazel-build-file-sorter
+  name: bazel-build-file-sorter
+  description: Sort targets in Bazel BUILD files alphabetically
+  entry: bazel-build-file-sorter
+  args: [-i]
+  files: '(^|/|\.)BUILD(\.bazel)?$'
+  language: python

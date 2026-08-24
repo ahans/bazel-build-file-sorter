@@ -24,15 +24,16 @@ func main() {
 		fmt.Println(version)
 		return
 	}
-	if flag.NArg() != 1 {
-		fmt.Fprintf(os.Stderr, "usage: build-file-sorter [-i] <file>\n")
+	// Multiple files only make sense in place (pre-commit passes all matching files at once).
+	if flag.NArg() == 0 || (flag.NArg() > 1 && !*updateInPlace) {
+		fmt.Fprintf(os.Stderr, "usage: bazel-build-file-sorter <file>\n       bazel-build-file-sorter -i <file>...\n")
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
 
-	filename := flag.Arg(0)
-
-	run(os.Stdout, filename, *updateInPlace)
+	for _, filename := range flag.Args() {
+		run(os.Stdout, filename, *updateInPlace)
+	}
 }
 
 func run(w io.Writer, filename string, updateInPlace bool) {

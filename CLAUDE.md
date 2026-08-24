@@ -1,4 +1,4 @@
-# build-file-sorter
+# bazel-build-file-sorter
 
 ## What this is
 
@@ -16,6 +16,14 @@ A CLI tool that sorts named rules (targets) in Bazel BUILD files alphabetically 
 Targets whose `name` matches the Bazel package name (e.g., `cc_library(name = "foo")` in `//foo/BUILD`) may warrant special sort treatment (e.g., always sorted first or excluded from sorting). Not yet implemented.
 
 To support this, `build.File.WorkspaceRoot` needs to be populated — the parser leaves it empty. Auto-detect by walking up the directory tree from the BUILD file to find `WORKSPACE`, `WORKSPACE.bazel`, or `MODULE.bazel`. The package name is then `"//" + filepath.Dir(f.Path)` relative to `WorkspaceRoot`.
+
+## pre-commit hook
+
+The hook lives in `.pre-commit-hooks.yaml` with `language: python`. pre-commit installs `language: python` hooks by running `pip install .` in a fresh virtualenv, so this repo is packaged as a wheel that bundles the Go binary — following the same pattern as [shellcheck-py](https://github.com/shellcheck-py/shellcheck-py).
+
+The wheel is built with [setuptools-download](https://github.com/asottile/setuptools-download): `setup.cfg` lists one `download_scripts` entry per platform (URL to the GitHub release asset + sha256, selected by a PEP 508 marker), and setuptools-download fetches the matching one at build time and installs it as a wheel *script*, so `pip install` drops `bazel-build-file-sorter` into the venv's `bin/`. `setup.py` only overrides `bdist_wheel` to mark the wheel non-pure and platform-tagged. Nothing is downloaded at runtime. The hook's `entry` is the binary itself (`bazel-build-file-sorter`), with `args: [-i]` so it sorts files in place. Marker values are Python's (`sys_platform` `linux`/`darwin`/`win32`, `platform_machine` `x86_64`/`aarch64`/`arm64`/`AMD64`/`ARM64`), not Go's.
+
+**Releasing** happens locally, not in CI, because the sha256 hashes in `setup.cfg` must be committed under the release tag: run `./release.sh v0.x.y` on an up-to-date, clean `main`. It cross-compiles all binaries via `./build-all.sh <tag>` (which passes `VERSION=<tag>` to `make`, so the embedded version is right before the tag exists), regenerates the `download_scripts` section and `version` in `setup.cfg`, bumps `rev:` in the README, commits, creates an annotated tag, asks for confirmation, pushes `main` and the tag, and uploads the binaries with `gh release create`. Do not reintroduce a tag-triggered release workflow — rebuilt binaries would not match the committed hashes.
 
 ## Test structure
 
