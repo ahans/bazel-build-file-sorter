@@ -36,7 +36,7 @@ jobs:
         run: |
           ext=${{ matrix.goos == 'windows' && '.exe' || '' }}
           make build
-          mv build-file-sorter build-file-sorter-${{ matrix.goos }}-${{ matrix.goarch }}${ext}
+          mv build-file-sorter${ext} build-file-sorter-${{ matrix.goos }}-${{ matrix.goarch }}${ext}
 
       - uses: softprops/action-gh-release@v2
         with:
