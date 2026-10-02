@@ -18,6 +18,24 @@ jobs:
           go-version-file: go.mod
       - run: go test ./...
 
+  # Installs the hook the way pre-commit users do (wheel bundling the binary of
+  # the release pinned in setup.cfg) and runs it on the testdata cases.
+  test-pre-commit:
+    strategy:
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, macos-latest, macos-26-intel, windows-latest, windows-11-arm]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: pip install pre-commit
+      - run: .github/workflows/test-pre-commit-hook.sh
+
   lint:
     runs-on: ubuntu-24.04
     steps:

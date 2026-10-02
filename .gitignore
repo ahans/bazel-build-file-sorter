@@ -1,2 +1,6 @@
-build-file-sorter*
+/.vscode/
+bazel-build-file-sorter*
 coverage.*
+/build/
+/dist/
+*.egg-info/

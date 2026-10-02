@@ -1,4 +1,4 @@
-.PHONY: build test lint vet all
+.PHONY: build test lint vet format clean all
 
 VERSION := $(shell git describe --tags --always --dirty)
 
@@ -18,3 +18,6 @@ vet:
 
 lint:
 	golangci-lint run ./...
+
+clean:
+	rm -f bazel-build-file-sorter*
