@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Builds release binaries locally, pins their URLs and hashes in setup.cfg,
-# commits and tags the release, pushes, and uploads the binaries to GitHub.
+# commits and tags that on a release branch, pushes branch and tag, publishes
+# the GitHub release with the binaries, and opens a PR to merge it into main.
 set -euo pipefail
 
 if [[ $# -ne 1 ]]; then
@@ -14,6 +15,7 @@ if [[ ! "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
     exit 1
 fi
 VERSION="${TAG#v}"  # PEP 440 version for setup.cfg
+BRANCH="release/$TAG"
 REPO="ahans/bazel-build-file-sorter"
 
 # --- preflight -------------------------------------------------------------
@@ -33,6 +35,11 @@ if [[ "$(git rev-parse HEAD)" != "$(git rev-parse origin/main)" ]]; then
 fi
 if git rev-parse -q --verify "refs/tags/$TAG" >/dev/null; then
     echo "Tag $TAG already exists." >&2
+    exit 1
+fi
+if git rev-parse -q --verify "refs/heads/$BRANCH" >/dev/null \
+    || git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+    echo "Branch $BRANCH already exists." >&2
     exit 1
 fi
 gh auth status >/dev/null
@@ -91,17 +98,24 @@ sed -i '' "s/^    rev: v[0-9].*/    rev: $TAG/" README.md
 
 # --- commit, tag, publish --------------------------------------------------
 
+git switch -c "$BRANCH"
 git add setup.cfg README.md
 git commit -m "Release $TAG"
 git tag -a "$TAG" -m "Release $TAG"
 
 echo
 git show --stat HEAD
-read -r -p "Push $TAG and publish the GitHub release? [y/N] " answer
+read -r -p "Push $BRANCH and $TAG, and publish the GitHub release? [y/N] " answer
 if [[ "$answer" != "y" ]]; then
-    echo "Aborted. Undo with: git tag -d $TAG && git reset --hard HEAD~1" >&2
+    echo "Aborted. Undo with: git switch main && git branch -D $BRANCH && git tag -d $TAG" >&2
     exit 1
 fi
 
-git push --atomic origin main "$TAG"
+git push --atomic origin "$BRANCH" "$TAG"
 gh release create "$TAG" --repo "$REPO" --verify-tag --title "$TAG" --generate-notes "${assets[@]}"
+
+# The PR's CI installs the hook from the binaries just published.
+# Merge it with a merge commit, so the tag stays reachable from main.
+gh pr create --repo "$REPO" --base main --head "$BRANCH" --title "Release $TAG" \
+    --body "Pins the $TAG release binaries in setup.cfg and bumps the pre-commit rev in the README. Merge with a merge commit (not squash or rebase) so the $TAG tag stays reachable from main."
+git switch main
