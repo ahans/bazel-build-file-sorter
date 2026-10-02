@@ -30,7 +30,7 @@ Add this to your `.pre-commit-config.yaml`:
 ```yaml
 repos:
   - repo: https://github.com/ahans/bazel-build-file-sorter
-    rev: v0.2.1
+    rev: v0.3.0
     hooks:
       - id: bazel-build-file-sorter
 ```
