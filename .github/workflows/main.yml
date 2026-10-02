@@ -19,7 +19,7 @@ jobs:
       - run: go test ./...
 
   # Installs the hook the way pre-commit users do (wheel bundling the binary of
-  # the release pinned in setup.cfg) and runs it on a scratch repo.
+  # the release pinned in setup.cfg) and runs it on the testdata cases.
   pre-commit:
     strategy:
       matrix:
@@ -34,31 +34,7 @@ jobs:
         with:
           python-version: '3.x'
       - run: pip install pre-commit
-      - run: pre-commit validate-manifest .pre-commit-hooks.yaml
-      - name: Run hook on unsorted BUILD files
-        run: |
-          repo="$RUNNER_TEMP/hook-test"
-          mkdir -p "$repo/pkg" "$repo/third_party"
-          cp testdata/basic/input "$repo/BUILD"
-          cp testdata/basic/input "$repo/pkg/BUILD.bazel"
-          cp testdata/basic/input "$repo/third_party/foo.BUILD"
-          cp testdata/basic/input "$repo/not_a_build_file"
-          cd "$repo"
-          git init -q
-          git add -A
-
-          # Exit code 1 means the hook modified files, which is what we want.
-          status=0
-          pre-commit try-repo "$GITHUB_WORKSPACE" bazel-build-file-sorter --all-files || status=$?
-          if [[ $status -ne 1 ]]; then
-              echo "expected pre-commit to exit 1 (files modified), got $status" >&2
-              exit 1
-          fi
-
-          for f in BUILD pkg/BUILD.bazel third_party/foo.BUILD; do
-              diff -u "$GITHUB_WORKSPACE/testdata/basic/expected" "$f"
-          done
-          diff -u "$GITHUB_WORKSPACE/testdata/basic/input" not_a_build_file
+      - run: .github/workflows/test-pre-commit-hook.sh
 
   lint:
     runs-on: ubuntu-24.04

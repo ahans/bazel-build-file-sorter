@@ -18,3 +18,4 @@ class patched_bdist_wheel(bdist_wheel):
 cmdclass = {'bdist_wheel': patched_bdist_wheel}
 
 setuptools.setup(cmdclass=cmdclass)
+
