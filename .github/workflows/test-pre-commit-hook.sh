@@ -24,13 +24,9 @@ for name in BUILD.bazel foo.BUILD foo.BUILD.bazel not_a_build_file; do
     files+=("$tmp/basic/$name")
 done
 
-# Exit code 1 means the hook modified files, which is expected.
-status=0
-pre-commit try-repo . bazel-build-file-sorter --files "${files[@]}" || status=$?
-if [[ $status -ne 1 ]]; then
-    echo "expected pre-commit to exit 1 (files modified), got $status" >&2
-    exit 1
-fi
+# The copies are untracked, so pre-commit can't see that the hook modified them
+# and only fails if the binary does. The diffs below check the actual result.
+pre-commit try-repo . bazel-build-file-sorter --files "${files[@]}"
 
 failed=0
 for dir in testdata/*/; do
