@@ -20,7 +20,7 @@ jobs:
 
   # Installs the hook the way pre-commit users do (wheel bundling the binary of
   # the release pinned in setup.cfg) and runs it on the testdata cases.
-  pre-commit:
+  test-pre-commit:
     strategy:
       matrix:
         os: [ubuntu-24.04, ubuntu-24.04-arm, macos-latest, macos-26-intel, windows-latest, windows-11-arm]
